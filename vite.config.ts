@@ -6,6 +6,8 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // На GitHub Pages сайт буде доступний у папці репозиторію.
+  base: process.env.GITHUB_ACTIONS ? '/vue-lottery-app/' : '/',
   plugins: [
     vue(),
     vueDevTools(),
