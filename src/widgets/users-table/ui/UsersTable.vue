@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import type { User } from '@/entities/user'
-import { AppButton, AppTable, AppTableColumn } from '@/shared/ui'
+import { AppButton, AppTable, type AppTableColumn } from '@/shared/ui'
+
+const columns: AppTableColumn[] = [
+  { key: 'image', header: 'Фото' },
+  { key: 'name', header: "Ім'я" },
+  { key: 'email', header: 'E-mail', field: 'email' },
+  { key: 'username', header: 'Username', field: 'username' },
+  { key: 'actions', header: 'Дії' },
+]
 
 defineProps<{
   users: User[]
@@ -13,25 +21,21 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <AppTable :value="users" :loading="loading">
-    <AppTableColumn header="Фото">
-      <template #body="{ data }">
-        <img class="avatar" :src="data.image" :alt="data.firstName" />
-      </template>
-    </AppTableColumn>
-    <AppTableColumn header="Ім'я">
-      <template #body="{ data }">{{ data.firstName }} {{ data.lastName }}</template>
-    </AppTableColumn>
-    <AppTableColumn field="email" header="E-mail" />
-    <AppTableColumn field="username" header="Username" />
-    <AppTableColumn header="Дії">
-      <template #body="{ data }">
-        <div class="actions">
-          <RouterLink class="table-link" :to="{ name: 'user-details', params: { id: data.id } }">Деталі</RouterLink>
-          <AppButton label="Видалити" severity="danger" outlined size="small" @click="emit('remove', data.id)" />
-        </div>
-      </template>
-    </AppTableColumn>
+  <AppTable :value="users" :loading="loading" :columns="columns">
+    <template #body-image="{ data }">
+      <img class="avatar" :src="data.image" :alt="data.firstName" />
+    </template>
+
+    <template #body-name="{ data }">
+      {{ data.firstName }} {{ data.lastName }}
+    </template>
+
+    <template #body-actions="{ data }">
+      <div class="actions">
+        <RouterLink class="table-link" :to="{ name: 'user-details', params: { id: data.id } }">Деталі</RouterLink>
+        <AppButton label="Видалити" severity="danger" outlined size="small" @click="emit('remove', data.id)" />
+      </div>
+    </template>
   </AppTable>
 
   <p v-if="!loading && !users.length" class="message">Користувачів не знайдено.</p>
