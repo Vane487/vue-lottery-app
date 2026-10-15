@@ -1,23 +1,22 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './providers/router'
 import './styles/main.scss'
 import { configureHttpAuth } from '@/shared/api'
-import { useAuthStore } from '@/stores/auth'
+import { useSessionStore } from '@/entities/session'
 import { registerServices } from './providers/services'
+import { pinia } from './providers/pinia'
 
 const app = createApp(App)
-const pinia = createPinia()
 
 registerServices()
 app.use(pinia)
 app.use(router)
 
-const auth = useAuthStore(pinia)
+const session = useSessionStore(pinia)
 configureHttpAuth(
-  () => auth.accessToken || null,
-  () => auth.refreshAccessToken(),
+  () => session.accessToken || null,
+  () => session.refreshAccessToken(),
 )
 
 app.mount('#app')

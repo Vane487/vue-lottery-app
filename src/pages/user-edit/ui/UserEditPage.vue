@@ -2,10 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import UserForm from '@/features/user-form/ui/UserForm.vue'
-import { type UserService } from '@/entities/user'
-import { ServiceProvider } from '@/shared/api'
-import { useUsersStore } from '@/stores/users'
-import type { CreateUserDto, User } from '@/entities/user'
+import { useUsersStore, type CreateUserDto, type User } from '@/entities/user'
 
 const props = defineProps<{ id: string }>()
 const router = useRouter()
@@ -18,7 +15,7 @@ onMounted(async () => {
   if (user.value) return
 
   try {
-    user.value = await ServiceProvider.get<UserService>('users').getById(Number(props.id))
+    user.value = await usersStore.fetchUser(Number(props.id))
   } catch (reason) {
     error.value = reason instanceof Error ? reason.message : 'Не вдалося завантажити користувача.'
   } finally {
@@ -29,7 +26,7 @@ onMounted(async () => {
 async function updateUser(values: CreateUserDto): Promise<void> {
   error.value = ''
   try {
-    await usersStore.update(Number(props.id), values)
+    await usersStore.updateUser(Number(props.id), values)
     await router.push({ name: 'users' })
   } catch (reason) {
     error.value = reason instanceof Error ? reason.message : 'Не вдалося оновити користувача.'

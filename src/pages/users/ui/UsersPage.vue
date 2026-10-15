@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useUsersStore } from '@/stores/users'
+import { useUsersStore } from '@/entities/user'
 
 const route = useRoute()
 const router = useRouter()
@@ -21,7 +21,7 @@ watch(
   ([page, query]) => {
     const q = typeof query === 'string' ? query : ''
     search.value = q
-    void store.load(Number(page) > 0 ? Number(page) : 1, q)
+    void store.fetchUsers({ page: Number(page) > 0 ? Number(page) : 1, query: q })
   },
   { immediate: true },
 )
@@ -43,7 +43,7 @@ function searchUsers(): void {
 async function removeUser(id: number): Promise<void> {
   actionError.value = ''
   try {
-    await store.remove(id)
+    await store.removeUser(id)
   } catch (reason) {
     actionError.value = reason instanceof Error ? reason.message : 'Не вдалося видалити користувача.'
   }
@@ -70,7 +70,7 @@ async function removeUser(id: number): Promise<void> {
     </div>
   </form>
 
-  <div v-if="store.loading" class="alert alert-info">Завантаження користувачів…</div>
+  <div v-if="store.isLoading" class="alert alert-info">Завантаження користувачів…</div>
   <div v-else-if="store.error" class="alert alert-danger">{{ store.error }}</div>
   <div v-else class="card border-0 shadow-sm overflow-hidden">
     <div class="table-responsive">

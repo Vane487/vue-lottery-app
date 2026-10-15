@@ -4,11 +4,11 @@ import { ErrorMessage, Field, Form } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
 import { useRoute, useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { useSessionStore } from '@/entities/session'
 
 const router = useRouter()
 const route = useRoute()
-const auth = useAuthStore()
+const session = useSessionStore()
 const error = ref('')
 
 const schema = toTypedSchema(
@@ -21,7 +21,7 @@ const schema = toTypedSchema(
 async function login(values: Record<string, unknown>): Promise<void> {
   error.value = ''
   try {
-    await auth.login(String(values.username ?? ''), String(values.password ?? ''))
+    await session.login(String(values.username ?? ''), String(values.password ?? ''))
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/users'
     await router.push(redirect)
   } catch {

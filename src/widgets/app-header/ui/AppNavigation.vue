@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { useSessionStore } from '@/entities/session'
 
 const router = useRouter()
-const auth = useAuthStore()
+const session = useSessionStore()
 
 function logout(): void {
-  auth.logout()
+  session.clearSession()
   void router.push({ name: 'login' })
 }
 </script>
@@ -16,7 +16,7 @@ function logout(): void {
     <RouterLink to="/">Home</RouterLink>
     <RouterLink to="/about">About author</RouterLink>
     <RouterLink to="/users">Users</RouterLink>
-    <button v-if="auth.isAuthenticated" type="button" class="nav-logout" @click="logout">Logout</button>
+    <button v-if="session.isAuthenticated" type="button" class="nav-logout" @click="logout">Logout</button>
     <RouterLink v-else to="/login">Login</RouterLink>
   </nav>
 </template>

@@ -2,8 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import UserForm from '@/features/user-form/ui/UserForm.vue'
-import { useUsersStore } from '@/stores/users'
-import type { CreateUserDto } from '@/entities/user'
+import { useUsersStore, type CreateUserDto } from '@/entities/user'
 
 const router = useRouter()
 const usersStore = useUsersStore()
@@ -12,7 +11,7 @@ const error = ref('')
 async function createUser(values: CreateUserDto): Promise<void> {
   error.value = ''
   try {
-    await usersStore.create(values)
+    await usersStore.createUser(values)
     await router.push({ name: 'users' })
   } catch (reason) {
     error.value = reason instanceof Error ? reason.message : 'Не вдалося створити користувача.'
