@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { RouterView, createRouter, createWebHistory } from 'vue-router'
 import { useSessionStore } from '@/entities/session'
 
 const router = createRouter({
@@ -30,17 +30,24 @@ const router = createRouter({
     },
     {
       path: '/users/:id',
-      name: 'user-details',
-      component: () => import('@/pages/user-details'),
-      props: true,
-      meta: { title: 'Деталі користувача', layout: 'default', requiresAuth: true },
-    },
-    {
-      path: '/users/:id/edit',
-      name: 'user-edit',
-      component: () => import('@/pages/user-edit'),
-      props: true,
-      meta: { title: 'Редагування користувача', layout: 'default', requiresAuth: true },
+      component: RouterView,
+      meta: { title: 'Користувач', layout: 'default', requiresAuth: true },
+      children: [
+        {
+          path: '',
+          name: 'user-details',
+          component: () => import('@/pages/user-details'),
+          props: true,
+          meta: { title: 'Деталі користувача', layout: 'default', requiresAuth: true },
+        },
+        {
+          path: 'edit',
+          name: 'user-edit',
+          component: () => import('@/pages/user-edit'),
+          props: true,
+          meta: { title: 'Редагування користувача', layout: 'default', requiresAuth: true },
+        },
+      ],
     },
     {
       path: '/login',
