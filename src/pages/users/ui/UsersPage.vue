@@ -1,27 +1,33 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { useUsersStore } from '@/entities/user'
+import { UsersTable } from '@/widgets/users-table'
+import { AppButton, AppInput, useAppConfirm, useAppToast } from '@/shared/ui'
 
 const route = useRoute()
 const router = useRouter()
-const store = useUsersStore()
+const usersStore = useUsersStore()
+const { users, total, isLoading, error } = storeToRefs(usersStore)
 const search = ref('')
 const actionError = ref('')
+const { askToDelete } = useAppConfirm()
+const toast = useAppToast()
 
 const currentPage = computed(() => {
   const page = Number(route.query.page ?? 1)
   return Number.isInteger(page) && page > 0 ? page : 1
 })
 
-const pageCount = computed(() => Math.max(1, Math.ceil(store.total / 10)))
+const pageCount = computed(() => Math.max(1, Math.ceil(total.value / 10)))
 
 watch(
   () => [route.query.page, route.query.q],
   ([page, query]) => {
     const q = typeof query === 'string' ? query : ''
     search.value = q
-    void store.fetchUsers({ page: Number(page) > 0 ? Number(page) : 1, query: q })
+    void usersStore.fetchUsers({ page: Number(page) > 0 ? Number(page) : 1, query: q })
   },
   { immediate: true },
 )
@@ -40,10 +46,16 @@ function searchUsers(): void {
   updateQuery(1)
 }
 
+function confirmRemove(id: number): void {
+  askToDelete(() => void removeUser(id))
+}
+
 async function removeUser(id: number): Promise<void> {
   actionError.value = ''
+
   try {
-    await store.removeUser(id)
+    await usersStore.removeUser(id)
+    toast.success('Користувача видалено зі списку.')
   } catch (reason) {
     actionError.value = reason instanceof Error ? reason.message : 'Не вдалося видалити користувача.'
   }
@@ -51,76 +63,79 @@ async function removeUser(id: number): Promise<void> {
 </script>
 
 <template>
-  <section class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-4">
+  <section class="page-heading">
     <div>
-      <p class="text-primary fw-bold text-uppercase mb-1">DummyJSON API</p>
-      <h1 class="h2 mb-1">Users</h1>
-      <p class="text-secondary mb-0">Знайдено: {{ store.total }}</p>
+      <p class="eyebrow">DummyJSON API</p>
+      <h1>Користувачі</h1>
+      <p class="muted">Знайдено: {{ total }}</p>
     </div>
-    <RouterLink class="btn btn-primary" :to="{ name: 'user-create' }">Додати користувача</RouterLink>
+    <RouterLink class="button-link" :to="{ name: 'user-create' }">Додати користувача</RouterLink>
   </section>
 
-  <form class="row g-2 mb-3" @submit.prevent="searchUsers">
-    <div class="col-sm-8 col-md-6">
-      <label class="visually-hidden" for="search">Пошук користувача</label>
-      <input id="search" v-model.trim="search" class="form-control" placeholder="Пошук за ім'ям" />
-    </div>
-    <div class="col-auto">
-      <button class="btn btn-outline-primary" type="submit">Шукати</button>
-    </div>
+  <form class="search-form" @submit.prevent="searchUsers">
+    <AppInput id="search" v-model="search" placeholder="Пошук за ім'ям" />
+    <AppButton type="submit" label="Шукати" outlined />
   </form>
 
-  <div v-if="store.isLoading" class="alert alert-info">Завантаження користувачів…</div>
-  <div v-else-if="store.error" class="alert alert-danger">{{ store.error }}</div>
-  <div v-else class="card border-0 shadow-sm overflow-hidden">
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead>
-          <tr>
-            <th>Фото</th>
-            <th>Ім'я</th>
-            <th>E-mail</th>
-            <th>Username</th>
-            <th aria-label="Дії"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="user in store.users" :key="user.id">
-            <td><img class="avatar" :src="user.image" :alt="user.firstName" /></td>
-            <td>{{ user.firstName }} {{ user.lastName }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.username }}</td>
-            <td class="text-nowrap">
-              <RouterLink class="btn btn-sm btn-outline-primary me-2" :to="{ name: 'user-details', params: { id: user.id } }">
-                Деталі
-              </RouterLink>
-              <button class="btn btn-sm btn-outline-danger" type="button" @click="removeUser(user.id)">Видалити</button>
-            </td>
-          </tr>
-          <tr v-if="!store.users.length">
-            <td colspan="5" class="text-center text-secondary py-4">Користувачів не знайдено.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <p v-if="error" class="message message--error">{{ error }}</p>
+  <section v-else class="panel table-panel">
+    <UsersTable :users="users" :loading="isLoading" @remove="confirmRemove" />
+  </section>
 
-  <div v-if="actionError" class="alert alert-danger mt-3">{{ actionError }}</div>
+  <p v-if="actionError" class="message message--error">{{ actionError }}</p>
 
-  <nav v-if="pageCount > 1" class="mt-4" aria-label="Пагінація">
-    <div class="d-flex gap-2 align-items-center">
-      <button class="btn btn-outline-secondary" :disabled="currentPage === 1" @click="updateQuery(currentPage - 1)">← Назад</button>
-      <span>Сторінка {{ currentPage }} з {{ pageCount }}</span>
-      <button class="btn btn-outline-secondary" :disabled="currentPage === pageCount" @click="updateQuery(currentPage + 1)">Вперед →</button>
-    </div>
+  <nav v-if="pageCount > 1" class="pagination" aria-label="Пагінація">
+    <AppButton label="← Назад" severity="secondary" outlined :disabled="currentPage === 1" @click="updateQuery(currentPage - 1)" />
+    <span>Сторінка {{ currentPage }} з {{ pageCount }}</span>
+    <AppButton label="Вперед →" severity="secondary" outlined :disabled="currentPage === pageCount" @click="updateQuery(currentPage + 1)" />
   </nav>
 </template>
 
 <style scoped>
-.avatar {
-  width: 42px;
-  height: 42px;
-  object-fit: cover;
-  border-radius: 50%;
+.page-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.3rem;
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.search-form {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 38rem;
+  margin-bottom: 1rem;
+}
+
+.search-form :deep(.app-input) {
+  flex: 1;
+}
+
+.table-panel {
+  overflow: auto;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 540px) {
+  .search-form {
+    flex-direction: column;
+  }
 }
 </style>

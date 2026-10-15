@@ -5,7 +5,7 @@ import AppLogo from './AppLogo.vue'
 
 <template>
   <header class="app-header">
-    <div class="container py-3 d-flex flex-column flex-md-row gap-3 justify-content-between align-items-md-center">
+    <div class="app-header__inside">
       <AppLogo />
       <AppNavigation />
     </div>

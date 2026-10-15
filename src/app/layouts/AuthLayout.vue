@@ -1,10 +1,8 @@
 <template>
   <main class="auth-layout">
-    <section class="auth-card card shadow-sm border-0">
-      <div class="card-body p-4 p-md-5">
-        <RouterLink class="small text-decoration-none" to="/">← На головну</RouterLink>
-        <slot />
-      </div>
+    <section class="auth-card">
+      <RouterLink class="back-link" to="/">← На головну</RouterLink>
+      <slot />
     </section>
   </main>
 </template>
@@ -20,5 +18,15 @@
 
 .auth-card {
   width: min(100%, 480px);
+  padding: 2rem;
+  background: white;
+  border: 1px solid #dbe4f0;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgb(32 50 79 / 10%);
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1.5rem;
 }
 </style>

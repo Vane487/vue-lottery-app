@@ -1,39 +1,144 @@
-// Імпортуємо лише частини Bootstrap, які використовує наш застосунок.
-@import 'bootstrap/scss/functions';
-@import 'bootstrap/scss/variables';
-@import 'bootstrap/scss/variables-dark';
-@import 'bootstrap/scss/maps';
-@import 'bootstrap/scss/mixins';
-@import 'bootstrap/scss/utilities';
-@import 'bootstrap/scss/root';
-@import 'bootstrap/scss/reboot';
-@import 'bootstrap/scss/type';
-@import 'bootstrap/scss/containers';
-@import 'bootstrap/scss/grid';
-@import 'bootstrap/scss/forms';
-@import 'bootstrap/scss/buttons';
-@import 'bootstrap/scss/tables';
-@import 'bootstrap/scss/alert';
-@import 'bootstrap/scss/close';
-@import 'bootstrap/scss/card';
-@import 'bootstrap/scss/badge';
-@import 'bootstrap/scss/nav';
-@import 'bootstrap/scss/helpers';
-@import 'bootstrap/scss/utilities/api';
+:root {
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #172033;
+  background: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 body {
   min-width: 320px;
+  min-height: 100vh;
   margin: 0;
   color: #172033;
   background: #f4f7fb;
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
-.btn-outline {
-  color: currentcolor;
-  background: transparent;
+a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.75rem, 4vw, 2.4rem);
+}
+
+h2 {
+  margin: 1.5rem 0 0.75rem;
+  font-size: 1.25rem;
+}
+
+.page-container,
+.app-header__inside {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.page-container {
+  padding: 2.5rem 0;
+}
+
+.app-header__inside {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.panel {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: #fff;
+  border: 1px solid #dbe4f0;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgb(32 50 79 / 8%);
+}
+
+.muted {
+  color: #607089;
+}
+
+.message {
+  padding: 0.85rem 1rem;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border-radius: 0.6rem;
+}
+
+.message--error {
+  color: #b42318;
+  background: #fef3f2;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 0.7rem 1rem;
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+  background: #2563eb;
+  border-radius: 0.5rem;
+}
+
+.button-link:hover {
+  color: white;
+  text-decoration: none;
+  background: #1d4ed8;
+}
+
+.app-dark body,
+body:has(.app-dark) {
+  color: #e2e8f0;
+  background: #0f172a;
+}
+
+.app-dark .default-layout {
+  background: #0f172a;
+}
+
+.app-dark .panel,
+.app-dark .auth-card,
+.app-dark .app-header {
+  color: #e2e8f0;
+  background: #162033;
+  border-color: #334155;
+}
+
+.app-dark .muted {
+  color: #b6c2d3;
+}
+
+.app-dark .tags span {
+  background: #273b5f;
+}
+
+@media (max-width: 640px) {
+  .page-container {
+    padding: 1.5rem 0;
+  }
+
+  .app-header__inside {
+    align-items: flex-start;
+  }
 }

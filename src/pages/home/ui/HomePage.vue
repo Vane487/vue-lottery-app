@@ -1,27 +1,40 @@
 <template>
-  <section class="hero card border-0 shadow-sm">
-    <div class="card-body p-4 p-md-5">
-      <p class="text-primary fw-bold text-uppercase">Лабораторна робота №5</p>
-      <h1 class="display-6 fw-bold">Vue Lottery із маршрутизацією</h1>
-      <p class="lead text-secondary">
-        Це SPA-застосунок на Vue 3. У ньому є маршрути, авторизація, сторінка users і робота з REST API DummyJSON.
-      </p>
-      <div class="d-flex flex-wrap gap-2 mb-4">
-        <span class="badge text-bg-light">Vue 3</span>
-        <span class="badge text-bg-light">TypeScript</span>
-        <span class="badge text-bg-light">Vue Router</span>
-        <span class="badge text-bg-light">Pinia</span>
-        <span class="badge text-bg-light">VeeValidate + Zod</span>
-      </div>
-      <a class="btn btn-primary" href="https://github.com/Vane487/vue-lottery-app" target="_blank" rel="noreferrer">
-        GitHub проєкту
-      </a>
+  <section class="hero panel">
+    <p class="eyebrow">Лабораторні №5–6</p>
+    <h1>Vue Lottery із FSD та Pinia</h1>
+    <p class="muted">
+      Це SPA-застосунок на Vue 3: маршрути, авторизація, список користувачів, REST API DummyJSON і Feature-Sliced Design.
+    </p>
+    <div class="tags">
+      <span>Vue 3</span><span>TypeScript</span><span>Vue Router</span><span>Pinia</span><span>PrimeVue</span><span>VeeValidate + Zod</span>
     </div>
+    <a class="button-link" href="https://github.com/Vane487/vue-lottery-app" target="_blank" rel="noreferrer">GitHub проєкту</a>
   </section>
 </template>
 
 <style scoped>
 .hero {
   max-width: 850px;
+}
+
+.eyebrow {
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.tags span {
+  padding: 0.35rem 0.65rem;
+  background: #eaf2ff;
+  border-radius: 999px;
 }
 </style>

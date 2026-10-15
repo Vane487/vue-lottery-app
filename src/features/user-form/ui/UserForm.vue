@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { ErrorMessage, Field, Form } from 'vee-validate'
+import { Field, Form } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
 import type { CreateUserDto, User } from '@/entities/user'
+import { AppButton, AppInput } from '@/shared/ui'
 
 const props = withDefaults(
   defineProps<{
@@ -57,53 +58,90 @@ function submit(values: Record<string, unknown>): void {
 
 <template>
   <Form :key="user?.id ?? 'new'" :validation-schema="schema" :initial-values="initialValues" @submit="submit">
-    <div class="row g-3">
-      <div class="col-md-6">
-        <label class="form-label" for="firstName">Ім'я</label>
-        <Field id="firstName" name="firstName" class="form-control" />
-        <ErrorMessage class="invalid-feedback d-block" name="firstName" />
-      </div>
-      <div class="col-md-6">
-        <label class="form-label" for="lastName">Прізвище</label>
-        <Field id="lastName" name="lastName" class="form-control" />
-        <ErrorMessage class="invalid-feedback d-block" name="lastName" />
-      </div>
-      <div class="col-md-6">
-        <label class="form-label" for="email">E-mail</label>
-        <Field id="email" name="email" type="email" class="form-control" />
-        <ErrorMessage class="invalid-feedback d-block" name="email" />
-      </div>
-      <div class="col-md-6">
-        <label class="form-label" for="username">Username</label>
-        <Field id="username" name="username" class="form-control" />
-        <ErrorMessage class="invalid-feedback d-block" name="username" />
-      </div>
-      <div class="col-md-6">
-        <label class="form-label" for="password">Пароль</label>
-        <Field id="password" name="password" type="password" class="form-control" />
-        <ErrorMessage class="invalid-feedback d-block" name="password" />
-      </div>
-      <div class="col-md-6">
-        <label class="form-label" for="age">Вік</label>
-        <Field id="age" name="age" type="number" min="1" class="form-control" />
-        <ErrorMessage class="invalid-feedback d-block" name="age" />
-      </div>
-      <div class="col-md-6">
-        <label class="form-label" for="gender">Стать</label>
-        <Field id="gender" name="gender" as="select" class="form-select">
-          <option value="">Обери варіант</option>
-          <option value="male">Чоловіча</option>
-          <option value="female">Жіноча</option>
-          <option value="other">Інша</option>
-        </Field>
-        <ErrorMessage class="invalid-feedback d-block" name="gender" />
-      </div>
-      <div class="col-md-6">
-        <label class="form-label" for="phone">Телефон</label>
-        <Field id="phone" name="phone" class="form-control" />
-        <ErrorMessage class="invalid-feedback d-block" name="phone" />
-      </div>
+    <div class="form-grid">
+      <Field v-slot="{ value, handleChange, errorMessage }" name="firstName">
+        <AppInput id="firstName" :model-value="String(value ?? '')" label="Ім'я" :error="errorMessage" @update:model-value="handleChange" />
+      </Field>
+      <Field v-slot="{ value, handleChange, errorMessage }" name="lastName">
+        <AppInput id="lastName" :model-value="String(value ?? '')" label="Прізвище" :error="errorMessage" @update:model-value="handleChange" />
+      </Field>
+      <Field v-slot="{ value, handleChange, errorMessage }" name="email">
+        <AppInput id="email" :model-value="String(value ?? '')" label="E-mail" type="email" :error="errorMessage" @update:model-value="handleChange" />
+      </Field>
+      <Field v-slot="{ value, handleChange, errorMessage }" name="username">
+        <AppInput id="username" :model-value="String(value ?? '')" label="Username" :error="errorMessage" @update:model-value="handleChange" />
+      </Field>
+      <Field v-slot="{ value, handleChange, errorMessage }" name="password">
+        <AppInput id="password" :model-value="String(value ?? '')" label="Пароль" type="password" :error="errorMessage" @update:model-value="handleChange" />
+      </Field>
+      <Field v-slot="{ value, handleChange, errorMessage }" name="age">
+        <AppInput id="age" :model-value="String(value ?? '')" label="Вік" type="number" :error="errorMessage" @update:model-value="handleChange" />
+      </Field>
+      <Field v-slot="{ value, handleChange, errorMessage }" name="gender">
+        <div class="native-field">
+          <label for="gender">Стать</label>
+          <select id="gender" :value="value" :class="{ invalid: errorMessage }" @change="handleChange">
+            <option value="">Обери варіант</option>
+            <option value="male">Чоловіча</option>
+            <option value="female">Жіноча</option>
+            <option value="other">Інша</option>
+          </select>
+          <small v-if="errorMessage">{{ errorMessage }}</small>
+        </div>
+      </Field>
+      <Field v-slot="{ value, handleChange, errorMessage }" name="phone">
+        <AppInput id="phone" :model-value="String(value ?? '')" label="Телефон" :error="errorMessage" @update:model-value="handleChange" />
+      </Field>
     </div>
-    <button type="submit" class="btn btn-primary mt-4">{{ submitLabel }}</button>
+    <AppButton class="submit-button" type="submit" :label="submitLabel" />
   </Form>
 </template>
+
+<style scoped>
+form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.native-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.native-field label {
+  font-weight: 600;
+}
+
+.native-field select {
+  width: 100%;
+  padding: 0.72rem;
+  color: inherit;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.45rem;
+}
+
+.native-field select.invalid {
+  border-color: #d92d20;
+}
+
+.native-field small {
+  color: #d92d20;
+}
+
+.submit-button {
+  justify-self: start;
+}
+
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

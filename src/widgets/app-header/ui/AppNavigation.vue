@@ -1,23 +1,21 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useSessionStore } from '@/entities/session'
+import { LogoutButton } from '@/features/auth'
+import { ThemeToggle } from '@/features/theme-toggle'
 
-const router = useRouter()
 const session = useSessionStore()
-
-function logout(): void {
-  session.clearSession()
-  void router.push({ name: 'login' })
-}
+const { isAuthenticated } = storeToRefs(session)
 </script>
 
 <template>
   <nav class="app-navigation" aria-label="Головна навігація">
-    <RouterLink to="/">Home</RouterLink>
-    <RouterLink to="/about">About author</RouterLink>
-    <RouterLink to="/users">Users</RouterLink>
-    <button v-if="session.isAuthenticated" type="button" class="nav-logout" @click="logout">Logout</button>
-    <RouterLink v-else to="/login">Login</RouterLink>
+    <RouterLink to="/">Головна</RouterLink>
+    <RouterLink to="/about">Про автора</RouterLink>
+    <RouterLink to="/users">Користувачі</RouterLink>
+    <LogoutButton v-if="isAuthenticated" />
+    <RouterLink v-else to="/login">Вхід</RouterLink>
+    <ThemeToggle />
   </nav>
 </template>
 
@@ -29,8 +27,7 @@ function logout(): void {
   align-items: center;
 }
 
-.app-navigation :deep(a),
-.nav-logout {
+.app-navigation :deep(a) {
   padding: 0.45rem 0.7rem;
   color: #42526b;
   font-weight: 600;
@@ -43,9 +40,5 @@ function logout(): void {
 .app-navigation :deep(a.router-link-exact-active) {
   color: #0969da;
   background: #e7f1ff;
-}
-
-.nav-logout:hover {
-  color: #b42318;
 }
 </style>

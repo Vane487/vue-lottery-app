@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { RouterLink } from 'vue-router'
 import { useUsersStore, type User } from '@/entities/user'
 
 const props = defineProps<{ id: string }>()
 const usersStore = useUsersStore()
-const user = ref<User | null>(usersStore.users.find((item) => item.id === Number(props.id)) ?? null)
+const { users } = storeToRefs(usersStore)
+const user = ref<User | null>(users.value.find((item) => item.id === Number(props.id)) ?? null)
 const loading = ref(!user.value)
 const error = ref('')
 
@@ -23,22 +25,20 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="loading" class="alert alert-info">Завантаження…</div>
-  <div v-else-if="error" class="alert alert-danger">{{ error }}</div>
-  <section v-else-if="user" class="card border-0 shadow-sm">
-    <div class="card-body p-4">
-      <div class="d-flex gap-4 align-items-start">
-        <img class="profile-image" :src="user.image" :alt="user.firstName" />
-        <div>
-          <h1 class="h2">{{ user.firstName }} {{ user.lastName }}</h1>
-          <p class="text-secondary mb-1">{{ user.email }}</p>
-          <p class="mb-1"><strong>Username:</strong> {{ user.username }}</p>
-          <p class="mb-1"><strong>Вік:</strong> {{ user.age }}</p>
-          <p class="mb-1"><strong>Стать:</strong> {{ user.gender }}</p>
-          <p class="mb-3"><strong>Телефон:</strong> {{ user.phone }}</p>
-          <RouterLink class="btn btn-primary me-2" :to="{ name: 'user-edit', params: { id: user.id } }">Редагувати</RouterLink>
-          <RouterLink class="btn btn-outline-secondary" :to="{ name: 'users' }">До списку</RouterLink>
-        </div>
+  <p v-if="loading" class="message">Завантаження…</p>
+  <p v-else-if="error" class="message message--error">{{ error }}</p>
+  <section v-else-if="user" class="panel profile">
+    <img class="profile-image" :src="user.image" :alt="user.firstName" />
+    <div>
+      <h1>{{ user.firstName }} {{ user.lastName }}</h1>
+      <p class="muted">{{ user.email }}</p>
+      <p><strong>Username:</strong> {{ user.username }}</p>
+      <p><strong>Вік:</strong> {{ user.age }}</p>
+      <p><strong>Стать:</strong> {{ user.gender }}</p>
+      <p><strong>Телефон:</strong> {{ user.phone }}</p>
+      <div class="profile-actions">
+        <RouterLink :to="{ name: 'user-edit', params: { id: user.id } }">Редагувати</RouterLink>
+        <RouterLink :to="{ name: 'users' }">До списку</RouterLink>
       </div>
     </div>
   </section>
@@ -50,5 +50,17 @@ onMounted(async () => {
   height: 120px;
   object-fit: cover;
   border-radius: 1rem;
+}
+
+.profile {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.25rem;
 }
 </style>

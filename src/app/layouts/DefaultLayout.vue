@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import AppHeader from '@/widgets/app-header/ui/AppHeader.vue'
+import { AppHeader } from '@/widgets/app-header'
 </script>
 
 <template>
   <div class="default-layout">
     <AppHeader />
-    <main class="container py-5">
+    <main class="page-container">
       <slot />
     </main>
   </div>

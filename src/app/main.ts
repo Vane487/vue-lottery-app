@@ -4,6 +4,7 @@ import router from './providers/router'
 import './styles/main.scss'
 import { configureHttpAuth } from '@/shared/api'
 import { useSessionStore } from '@/entities/session'
+import { useThemeStore } from '@/entities/theme'
 import { registerServices } from './providers/services'
 import { pinia } from './providers/pinia'
 import { setupUi } from './providers/ui'
@@ -16,6 +17,7 @@ app.use(router)
 setupUi(app)
 
 const session = useSessionStore(pinia)
+useThemeStore(pinia).applyTheme()
 configureHttpAuth(
   () => session.accessToken || null,
   () => session.refreshAccessToken(),

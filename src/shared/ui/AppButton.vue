@@ -9,9 +9,10 @@ withDefaults(
     loading?: boolean
     disabled?: boolean
     outlined?: boolean
+    text?: boolean
     size?: 'small' | 'large'
   }>(),
-  { type: 'button', loading: false, disabled: false, outlined: false },
+  { type: 'button', loading: false, disabled: false, outlined: false, text: false },
 )
 </script>
 
@@ -23,6 +24,7 @@ withDefaults(
     :loading="loading"
     :disabled="disabled"
     :outlined="outlined"
+    :text="text"
     :size="size"
   >
     <slot />

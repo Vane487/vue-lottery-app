@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import UserForm from '@/features/user-form/ui/UserForm.vue'
+import { UserForm } from '@/features/user-form'
 import { useUsersStore, type CreateUserDto, type User } from '@/entities/user'
+import { useAppToast } from '@/shared/ui'
 
 const props = defineProps<{ id: string }>()
 const router = useRouter()
 const usersStore = useUsersStore()
-const user = ref<User | null>(usersStore.users.find((item) => item.id === Number(props.id)) ?? null)
+const { users } = storeToRefs(usersStore)
+const user = ref<User | null>(users.value.find((item) => item.id === Number(props.id)) ?? null)
 const loading = ref(!user.value)
 const error = ref('')
+const toast = useAppToast()
 
 onMounted(async () => {
   if (user.value) return
@@ -27,6 +31,7 @@ async function updateUser(values: CreateUserDto): Promise<void> {
   error.value = ''
   try {
     await usersStore.updateUser(Number(props.id), values)
+    toast.success('Дані користувача оновлено.')
     await router.push({ name: 'users' })
   } catch (reason) {
     error.value = reason instanceof Error ? reason.message : 'Не вдалося оновити користувача.'
@@ -35,13 +40,11 @@ async function updateUser(values: CreateUserDto): Promise<void> {
 </script>
 
 <template>
-  <div v-if="loading" class="alert alert-info">Завантаження…</div>
-  <section v-else class="card border-0 shadow-sm">
-    <div class="card-body p-4">
-      <h1 class="h3">Редагувати користувача</h1>
-      <p class="text-secondary">Після PUT відповіді замінюємо користувача у локальному Pinia store.</p>
-      <div v-if="error" class="alert alert-danger">{{ error }}</div>
-      <UserForm v-if="user" :user="user" submit-label="Оновити" @save="updateUser" />
-    </div>
+  <p v-if="loading" class="message">Завантаження…</p>
+  <section v-else class="panel">
+    <h1>Редагувати користувача</h1>
+    <p class="muted">Після PUT відповіді замінюємо користувача у локальному Pinia store.</p>
+    <p v-if="error" class="message message--error">{{ error }}</p>
+    <UserForm v-if="user" :user="user" submit-label="Оновити" @save="updateUser" />
   </section>
 </template>
