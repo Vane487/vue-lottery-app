@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { ErrorMessage, Field, Form } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
-import type { CreateUserDto, User } from '@/types/user'
+import type { CreateUserDto, User } from '@/entities/user'
 
 const props = withDefaults(
   defineProps<{

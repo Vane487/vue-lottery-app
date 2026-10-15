@@ -1,5 +1,5 @@
-import { http } from '@/api/http-client'
-import type { AuthSession, User } from '@/types/user'
+import { http } from '@/shared/api'
+import type { AuthSession } from '../model/types'
 
 export class AuthService {
   login(username: string, password: string): Promise<AuthSession> {
@@ -7,10 +7,6 @@ export class AuthService {
       method: 'POST',
       body: JSON.stringify({ username, password, expiresInMins: 30 }),
     })
-  }
-
-  getCurrentUser(): Promise<User> {
-    return http<User>('/auth/me')
   }
 
   refresh(refreshToken: string): Promise<Pick<AuthSession, 'accessToken' | 'refreshToken'>> {

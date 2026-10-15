@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { ServiceProvider } from '@/services/service-provider'
-import type { CreateUserDto, UpdateUserDto, User } from '@/types/user'
+import { type UserService, type CreateUserDto, type UpdateUserDto, type User } from '@/entities/user'
+import { ServiceProvider } from '@/shared/api'
 
 export const useUsersStore = defineStore('users', () => {
   const users = ref<User[]>([])
@@ -17,7 +17,7 @@ export const useUsersStore = defineStore('users', () => {
     loading.value = true
     error.value = ''
     try {
-      const result = await ServiceProvider.users.getAll({ limit: 10, skip: (page - 1) * 10, query })
+      const result = await ServiceProvider.get<UserService>('users').getAll({ limit: 10, skip: (page - 1) * 10, query })
       users.value = result.items
       total.value = result.total
       lastRequest = request
@@ -29,21 +29,21 @@ export const useUsersStore = defineStore('users', () => {
   }
 
   async function create(data: CreateUserDto): Promise<User> {
-    const created = await ServiceProvider.users.create(data)
+    const created = await ServiceProvider.get<UserService>('users').create(data)
     users.value.unshift(created)
     total.value += 1
     return created
   }
 
   async function update(id: number, data: UpdateUserDto): Promise<User> {
-    const updated = await ServiceProvider.users.update(id, data)
+    const updated = await ServiceProvider.get<UserService>('users').update(id, data)
     const index = users.value.findIndex((user) => user.id === id)
     if (index !== -1) users.value[index] = { ...users.value[index], ...updated }
     return updated
   }
 
   async function remove(id: number): Promise<void> {
-    await ServiceProvider.users.delete(id)
+    await ServiceProvider.get<UserService>('users').delete(id)
     users.value = users.value.filter((user) => user.id !== id)
     total.value = Math.max(0, total.value - 1)
   }

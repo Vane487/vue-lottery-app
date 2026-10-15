@@ -1,6 +1,6 @@
-import { http } from '@/api/http-client'
-import type { CreateUserDto, UpdateUserDto, User, UsersResponse } from '@/types/user'
-import type { Creatable, Deletable, Editable, Readable } from './interfaces'
+import { http } from '@/shared/api'
+import type { Creatable, Deletable, Editable, Readable } from '@/shared/api'
+import type { CreateUserDto, UpdateUserDto, User, UsersResponse } from '../model/types'
 
 export class UserService implements Readable<User>, Creatable<User, CreateUserDto>, Editable<User, UpdateUserDto>, Deletable {
   async getAll({ limit = 10, skip = 0, query = '' } = {}): Promise<{ items: User[]; total: number }> {

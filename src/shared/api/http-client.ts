@@ -1,8 +1,4 @@
-const baseUrl = import.meta.env.VITE_API_URL
-
-if (!baseUrl) {
-  throw new Error('Не задано VITE_API_URL у файлі .env')
-}
+import { apiUrl } from '@/shared/config'
 
 export class HttpError extends Error {
   constructor(
@@ -13,7 +9,7 @@ export class HttpError extends Error {
   }
 }
 
-let getAccessToken = (): string | null => localStorage.getItem('lottery-access-token')
+let getAccessToken = (): string | null => null
 let refreshAccessToken: (() => Promise<string | null>) | null = null
 
 export function configureHttpAuth(
@@ -33,7 +29,7 @@ export async function http<T>(path: string, options: RequestInit = {}, canRefres
     headers.set('Authorization', `Bearer ${token}`)
   }
 
-  const response = await fetch(`${baseUrl}${path}`, { ...options, headers })
+  const response = await fetch(`${apiUrl}${path}`, { ...options, headers })
 
   if (response.status === 401 && canRefresh && refreshAccessToken) {
     const newToken = await refreshAccessToken()

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { ServiceProvider } from '@/services/service-provider'
+import { type UserService } from '@/entities/user'
+import { ServiceProvider } from '@/shared/api'
 import { useUsersStore } from '@/stores/users'
-import type { User } from '@/types/user'
+import type { User } from '@/entities/user'
 
 const props = defineProps<{ id: string }>()
 const usersStore = useUsersStore()
@@ -15,7 +16,7 @@ onMounted(async () => {
   if (user.value) return
 
   try {
-    user.value = await ServiceProvider.users.getById(Number(props.id))
+    user.value = await ServiceProvider.get<UserService>('users').getById(Number(props.id))
   } catch (reason) {
     error.value = reason instanceof Error ? reason.message : 'Не вдалося знайти користувача.'
   } finally {

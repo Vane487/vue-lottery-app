@@ -36,14 +36,3 @@ export interface UsersResponse {
   skip: number
   limit: number
 }
-
-export interface AuthSession {
-  accessToken: string
-  refreshToken: string
-  id: number
-  firstName: string
-  lastName: string
-  username: string
-  email: string
-  image?: string
-}

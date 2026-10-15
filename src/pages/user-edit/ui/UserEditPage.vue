@@ -2,9 +2,10 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import UserForm from '@/features/user-form/ui/UserForm.vue'
-import { ServiceProvider } from '@/services/service-provider'
+import { type UserService } from '@/entities/user'
+import { ServiceProvider } from '@/shared/api'
 import { useUsersStore } from '@/stores/users'
-import type { CreateUserDto, User } from '@/types/user'
+import type { CreateUserDto, User } from '@/entities/user'
 
 const props = defineProps<{ id: string }>()
 const router = useRouter()
@@ -17,7 +18,7 @@ onMounted(async () => {
   if (user.value) return
 
   try {
-    user.value = await ServiceProvider.users.getById(Number(props.id))
+    user.value = await ServiceProvider.get<UserService>('users').getById(Number(props.id))
   } catch (reason) {
     error.value = reason instanceof Error ? reason.message : 'Не вдалося завантажити користувача.'
   } finally {

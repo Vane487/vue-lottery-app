@@ -1,7 +1,8 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { ServiceProvider } from '@/services/service-provider'
-import type { AuthSession, User } from '@/types/user'
+import { type AuthService, type AuthSession } from '@/entities/session'
+import type { User } from '@/entities/user'
+import { ServiceProvider } from '@/shared/api'
 
 const accessTokenKey = 'lottery-access-token'
 const refreshTokenKey = 'lottery-refresh-token'
@@ -44,7 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function login(username: string, password: string): Promise<void> {
-    const session = await ServiceProvider.auth.login(username, password)
+    const session = await ServiceProvider.get<AuthService>('auth').login(username, password)
     saveSession(session)
   }
 
@@ -52,7 +53,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!refreshToken.value) return null
 
     try {
-      const session = await ServiceProvider.auth.refresh(refreshToken.value)
+      const session = await ServiceProvider.get<AuthService>('auth').refresh(refreshToken.value)
       accessToken.value = session.accessToken
       refreshToken.value = session.refreshToken
       localStorage.setItem(accessTokenKey, accessToken.value)
